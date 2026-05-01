@@ -1,5 +1,9 @@
 import axios from "axios";
 
+export async function GET() {
+  return Response.json({ message: "API READY" });
+}
+
 export async function POST(req) {
   try {
     const body = await req.json();
