@@ -10,7 +10,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
 
-  // PARALLAX MOUSE
   useEffect(() => {
     const handleMove = (e: MouseEvent) => {
       setMouse({
@@ -18,11 +17,11 @@ export default function Home() {
         y: (e.clientY / window.innerHeight - 0.5) * 20,
       });
     };
+
     window.addEventListener("mousemove", handleMove);
     return () => window.removeEventListener("mousemove", handleMove);
   }, []);
 
-  // TYPING EFFECT
   const typeText = async (text: string) => {
     let i = 0;
     setResult("");
@@ -34,12 +33,9 @@ export default function Home() {
     }, 10);
   };
 
-  // VOICE AI
-  const speak = (text: string) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.9;
-    utterance.pitch = 0.8;
-    speechSynthesis.speak(utterance);
+  const handleClear = () => {
+    setInput("");
+    setResult("");
   };
 
   const handleSubmit = async () => {
@@ -59,27 +55,45 @@ export default function Home() {
     const data = await res.json();
 
     await typeText(data.result);
-    speak(data.result);
 
     setLoading(false);
   };
 
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <main className="min-h-screen bg-black text-white relative overflow-hidden">
 
-      {/* BACKGROUND GLOW */}
+      {/* BACKGROUND */}
       <div className="absolute w-[600px] h-[600px] bg-red-500 opacity-20 blur-[200px] rounded-full top-[-200px] left-[-200px] animate-pulse"></div>
       <div className="absolute w-[500px] h-[500px] bg-red-700 opacity-20 blur-[180px] rounded-full bottom-[-200px] right-[-200px] animate-pulse"></div>
 
       {/* NAVBAR */}
-      <nav className="flex justify-between items-center px-10 py-6 border-b border-zinc-800 relative z-10">
-        <h1 className="text-2xl font-bold text-red-500 tracking-widest">
-          NOIR.AI
-        </h1>
+      <nav
+        className={`sticky top-0 z-50 flex justify-between items-center px-10 py-6 border-b border-zinc-800 transition-all ${scrolled ? "bg-black/90 backdrop-blur-md shadow-lg" : "bg-transparent"
+          }`}
+      >
+
+        {/* LOGO */}
+        <Image
+          src="/7.png"
+          alt="Jen AI Logo"
+          width={200}
+          height={40}
+          className="object-contain"
+        />
 
         <div className="flex gap-6 text-sm text-zinc-400">
-          <a href="#about" className="hover:text-red-400">About</a>
-          <a href="https://github.com/naylamutiara03" target="_blank" className="hover:text-red-400">
+          {/* <a href="#about" className="hover:text-red-400 font-[ZenSerif]">About</a> */}
+          <a href="https://github.com/naylamutiara03" target="_blank" className="hover:text-red-400 font-[ZenSerif]">
             GitHub
           </a>
         </div>
@@ -94,15 +108,15 @@ export default function Home() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h1 className="text-5xl md:text-6xl font-bold leading-tight">
-            Most people ask AI for answers.
+          <h1 className="text-5xl md:text-6xl leading-tight font-[ZenSerif]">
+            You don’t need more noise.
             <span className="text-red-500 block mt-2">
-              You came here for judgment.
+              You need precision.
             </span>
           </h1>
 
           <p className="mt-6 text-zinc-400 max-w-md">
-            Noir doesn’t assist you. She challenges you.
+            Jen refines your thinking, sharpens decisions, and elevates strategy.
           </p>
 
           {/* MODE */}
@@ -111,11 +125,10 @@ export default function Home() {
               <button
                 key={m}
                 onClick={() => setMode(m)}
-                className={`px-4 py-2 rounded-lg border ${
-                  mode === m
-                    ? "bg-red-600 border-red-600"
-                    : "border-zinc-700 text-zinc-400"
-                }`}
+                className={`px-4 py-2 rounded-lg border transition ${mode === m
+                  ? "bg-red-600 border-red-600"
+                  : "border-zinc-700 text-zinc-400"
+                  }`}
               >
                 {m.toUpperCase()}
               </button>
@@ -123,13 +136,25 @@ export default function Home() {
           </div>
 
           {/* INPUT */}
-          <div className="mt-8">
+          <div className="mt-8 relative">
+
+            {/* TEXTAREA */}
             <textarea
-              className="w-full p-4 bg-zinc-900 border border-red-500 rounded-xl"
-              placeholder="Tell Noir your situation..."
+              className="w-full p-4 pr-12 bg-zinc-900 border border-red-500 rounded-xl"
+              placeholder="Tell Jen your situation..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
             />
+
+            {/* CLEAR INPUT BUTTON */}
+            {input && (
+              <button
+                onClick={() => setInput("")}
+                className="absolute top-3 right-3 text-zinc-400 hover:text-red-500"
+              >
+                ✕
+              </button>
+            )}
 
             <button
               onClick={handleSubmit}
@@ -140,7 +165,7 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* RIGHT IMAGE (PARALLAX) */}
+        {/* RIGHT IMAGE */}
         <motion.div
           style={{
             transform: `translate(${mouse.x}px, ${mouse.y}px)`,
@@ -150,8 +175,8 @@ export default function Home() {
           <div className="absolute w-80 h-80 bg-red-500 blur-[140px] opacity-30 rounded-full"></div>
 
           <Image
-            src="/like-jennie.jpg"
-            alt="Noir AI"
+            src="/jennie3.jpg"
+            alt="Jen AI"
             width={400}
             height={500}
             className="rounded-2xl shadow-2xl relative z-10"
@@ -161,7 +186,7 @@ export default function Home() {
 
       {/* LOADING */}
       {loading && (
-        <div className="px-10 animate-pulse space-y-3 relative z-10">
+        <div className="px-10 animate-pulse space-y-3">
           <div className="h-4 bg-zinc-800 rounded w-3/4"></div>
           <div className="h-4 bg-zinc-800 rounded w-2/4"></div>
           <div className="h-4 bg-zinc-800 rounded w-full"></div>
@@ -173,44 +198,89 @@ export default function Home() {
         <motion.section
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          className="px-10 pb-20 relative z-10"
+          className="px-10 pb-20"
         >
-          <div className="p-8 bg-zinc-900 rounded-2xl border border-red-500 shadow-[0_0_30px_rgba(255,0,0,0.2)]">
-            <h2 className="text-xl font-semibold mb-4 text-red-400">
-              Noir’s Judgment
-            </h2>
+          <div className="p-8 bg-zinc-900 rounded-2xl border border-red-500">
 
-            <div className="whitespace-pre-line text-zinc-300">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-red-400">
+                Jen’s Insight
+              </h2>
+
+              <button
+                onClick={handleClear}
+                className="text-zinc-400 hover:text-red-500 text-sm"
+              >
+                ✕ Clear
+              </button>
+            </div>
+
+            {/* 🔥 INI YANG KAMU KURANG */}
+            <div className="whitespace-pre-line text-zinc-300 leading-relaxed">
               {result}
             </div>
+
           </div>
         </motion.section>
       )}
 
       {/* ABOUT */}
-      <section id="about" className="px-10 pb-20 relative z-10">
-        <h2 className="text-3xl font-bold text-red-500 mb-4">About Noir</h2>
+      <section id="about" className="px-10 pb-20">
+        <h2 className="text-3xl font-bold text-red-500 mb-4 font-[ZenSerif]">About Jen</h2>
         <p className="text-zinc-400 max-w-xl">
-          Noir is a strategic AI designed to challenge your thinking — not comfort it.
+          Jen is a refined AI strategist built for clarity and precision.
         </p>
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-zinc-800 px-10 py-10 text-zinc-400 relative z-10">
-        <div className="flex justify-between">
-          <h2 className="text-red-500 font-bold">NOIR.AI</h2>
+      <footer className="border-t border-zinc-800 px-10 py-10 text-zinc-400">
 
-          <div className="flex gap-6">
-            <a href="#about">About</a>
-            <a href="https://github.com/naylamutiara03" target="_blank">
-              GitHub
-            </a>
+        <div className="flex flex-col md:flex-row justify-between gap-10">
+
+          {/* LEFT - CONTACT */}
+          <div className="space-y-3 text-sm font-[ZenSerif]">
+
+            <div className="flex items-center gap-3">
+              <span>📧</span>
+              <p>naylamsb03@gmail.com</p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span>📱</span>
+              <p>+6285930247131</p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span>📸</span>
+              <p>@naylamsb</p>
+            </div>
+
           </div>
+
+          {/* RIGHT - LOGO */}
+          <div className="flex justify-start md:justify-end">
+            <Image
+              src="/8.png"
+              alt="Jen AI Logo"
+              width={120}
+              height={40}
+              className="object-contain"
+            />
+          </div>
+
         </div>
 
-        <p className="text-xs mt-6 text-zinc-600">
-          © 2026 Noir AI
-        </p>
+        {/* BOTTOM */}
+        <div className="mt-10 border-t border-zinc-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">
+
+          <p>© 2026 Jen AI</p>
+
+          <p className="italic">
+            Inspired by Jennie Blackpink
+          </p>
+
+        </div>
+
       </footer>
 
     </main>

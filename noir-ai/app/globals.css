@@ -42,3 +42,10 @@ html {
   background: #ff2e2e;
   border-radius: 10px;
 }
+
+@font-face {
+  font-family: 'ZenSerif';
+  src: url('/fonts/ZEN-SERIF-TTF-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
